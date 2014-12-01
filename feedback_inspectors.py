@@ -93,13 +93,14 @@ class InspectorAppLogsJson(FeedbackInspector):
 
         # Parse each component log entries separately
         try:
-            jsonlog = json.loads(logdata)
+            jsonlog = json.loads(''.join(logdata))
             for component_name in jsonlog:
 
                 # Search for relevant events on each component
                 for component_entry in jsonlog[component_name]:
                     if component_entry['level'] == 'error':
-                        self.add_error("component <%s> reported errors" % component_name)
+                        self.add_error("%s reported errors" % (component_name))
+                        break
         except:
             self.add_error('Could not read logs in Json format')
             raise
