@@ -78,10 +78,16 @@ class FeedbackInspector:
         '''
         pass
 
-
 #
 # Instantiate your specific Inspector for a new logfile parser below
 #
+
+class InspectorAppLogsRaw(FeedbackInspector):
+    def inspect(self, logdata):
+        self.assert_not_exists(logdata, 'rdate FAIL', 'Rdate has failed at least once')
+        self.assert_not_exists(logdata, 'make-minecraft error', 'Make Minecraft has reported problems')
+
+
 class InspectorAppLogsJson(FeedbackInspector):
     def inspect(self, logdata):
 
@@ -97,12 +103,6 @@ class InspectorAppLogsJson(FeedbackInspector):
         except:
             self.add_error('Could not read logs in Json format')
             raise
-
-
-class InspectorAppLogsRaw(FeedbackInspector):
-    def inspect(self, logdata):
-        self.assert_not_exists(logdata, 'rdate FAIL', 'Rdate has failed at least once')
-        self.assert_not_exists(logdata, 'make-minecraft error', 'Make Minecraft has reported problems')
 
 
 class InspectorCmdline(FeedbackInspector):
@@ -241,13 +241,34 @@ class InspectorUsbDevices(FeedbackInspector):
         
 class InspectorWpalog(FeedbackInspector):
     def inspect(self, logdata):
+        # This parser is obsoleted by InspectorWifiInfo
+        # It is provided by backwards compatibility
+        wifi_inspector = InspectorWifiInfo()
+        wifi_inspector.inspect_wpa_log(logdata)
+
+
+class InspectorWifiInfo(FeedbackInspector):
+    def inspect(self, logdata):
+        find_more_dongles = '.*(wlan[1-9])(.*)'
+        try:
+            # Try to find if there are more connected wireless devices
+            m = re.search(find_more_dongles, ''.join(logdata), re.MULTILINE)
+            additional_dongle = m.group(1)
+            self.add_warn('There is at least one extra wireless device: %s' % additional_dongle)
+        except:
+            pass
+
+        self.inspect_wpa_log(logdata)
+        self.inspect_ifconfig(logdata)
+
+    def inspect_wpa_log(self, logdata):
         wpa_authenticated = 'EAPOL authentication completed successfully'
         self.assert_exists(logdata, wpa_authenticated, 'There is no indication of a successfull WPA wireless association')
 
+        wpa_unauthorized = 'EAPOL: Supplicant port status: Unauthorized'
+        self.assert_not_exists(logdata, wpa_unauthorized, 'The wireless router sent an unathorized status (wrong key passhrase?)')
 
-class InspectorIfconfig(FeedbackInspector):
-    def inspect(self, logdata):
-
+    def inspect_ifconfig(self, logdata):
         # Determine if Ethernet, Wireless, both, or none
         find_ip_regex = '%s.*\n.*inet addr:([0-9\.]*) (.*)'
         ip_ethernet = ip_wireless = None
@@ -299,6 +320,6 @@ inspectors = {
     'process.txt': InspectorProcess,
     'usbdevices.txt': InspectorUsbDevices,
     'wpalog.txt': InspectorWpalog,
-    'ifconfig.txt': InspectorIfconfig,
+    'wifi-info.txt': InspectorWifiInfo,
     'screenshot.png': InspectorScreenshot
 }
