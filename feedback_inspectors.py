@@ -306,6 +306,22 @@ class InspectorScreenshot(FeedbackInspector):
         self.add_info('This feedback report contains a screenshot')
 
 
+class InspectorCPUInfo(FeedbackInspector):
+    def inspect(self, logdata):
+        model_b = 'Model B+: False'
+        self.assert_exists(logdata, model_b, 'This is a RaspberryPI Model B+')
+
+
+class InspectorXorg(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
+class InspectorLSof(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 #
 # Add your inspector to the list
 #
@@ -323,5 +339,8 @@ inspectors = {
     'usbdevices.txt': InspectorUsbDevices,
     'wpalog.txt': InspectorWpalog,
     'wifi-info.txt': InspectorWifiInfo,
+    'cpu-info.txt': InspectorCPUInfo,
+    'xorg-log.txt': InspectorXorg,
+    'lsof.txt': InspectorLSof,
     'screenshot.png': InspectorScreenshot
 }
