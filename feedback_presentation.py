@@ -32,9 +32,31 @@ class FeedbackPresentation:
         self.warn = []
         self.error = []
         self.logs = []
+        jquery_code = '''
+<script>
+$(".expand_click").click(function(){
+ if ( $(this).children(".expand").is( ":hidden" ) ) {
+   $(this).children(".expand").slideDown( "slow" );
+  } else {
+   $(this).children(".expand").slideUp( "slow" );
+  };
+});
+</script>
+'''
+
+        css_code='''
+<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+<style>
+.expand
+{
+ display:none;
+}
+</style>
+'''
 
         self.page = markup.page()
-        self.page.init(title=title, css=css, header=header, footer=footer)
+
+        self.page.init(title=title, css=css, header=css_code, footer=jquery_code)
         if h1_title:
             self.page.h1(h1_title)
 
@@ -87,13 +109,20 @@ class FeedbackPresentation:
 
         self.page.h2('Logfile section')
         for log in self.logs:
+
+            self.page.div(class_='expand_click')
             self.page.h3('Dump logfile: %s' % log['logfile'])
+            self.page.div(class_='expand')
+
             if log['format'] == 'image':
                 img64 = base64.b64encode(''.join(log['logdata']))
                 self.page.img(src='data:image/png;base64,%s' % img64)
                 pass
             else:
                 self.page.pre(''.join(log['logdata']), class_='logfile')
+
+            self.page.div.close()
+            self.page.div.close()
 
     def get_html(self):
         return self.page
