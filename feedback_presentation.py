@@ -32,31 +32,26 @@ class FeedbackPresentation:
         self.warn = []
         self.error = []
         self.logs = []
-        jquery_code = '''
-<script>
-$(".expand_click").click(function(){
- if ( $(this).children(".expand").is( ":hidden" ) ) {
-   $(this).children(".expand").slideDown( "slow" );
-  } else {
-   $(this).children(".expand").slideUp( "slow" );
-  };
-});
-</script>
-'''
+        jquery_code = ('<script>'
+                       '$(".expand_click").click(function(){'
+                       'if ( $(this).children(".expand").is( ":hidden" ) ) {'
+                       '$(this).children(".expand").slideDown( "slow" );'
+                       '} else {'
+                       '$(this).children(".expand").slideUp( "slow" );'
+                       '};'
+                       '});'
+                       '</script>')
 
-        css_code='''
-<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
-<style>
-.expand
-{
- display:none;
-}
-</style>
-'''
+        css_code = ('<script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>'
+                    '<style>'
+                    '.expand'
+                    '{'
+                    'display:none;'
+                    '}'
+                    '</style>')
 
         self.page = markup.page()
-
-        self.page.init(title=title, css=css, header=css_code, footer=jquery_code)
+        self.page.init(title=title, css=css, header='{}{}'.format(css, css_code), footer='{}{}'.format(footer, jquery_code))
         if h1_title:
             self.page.h1(h1_title)
 
