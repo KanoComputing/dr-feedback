@@ -267,9 +267,6 @@ class InspectorWifiInfo(FeedbackInspector):
         wpa_authenticated = 'EAPOL authentication completed successfully'
         self.assert_exists(logdata, wpa_authenticated, 'There is no indication of a successfull WPA wireless association')
 
-        wpa_unauthorized = 'EAPOL: Supplicant port status: Unauthorized'
-        self.assert_not_exists(logdata, wpa_unauthorized, 'The wireless router sent an unathorized status (wrong key passhrase?)')
-
     def inspect_ifconfig(self, logdata):
         # Determine if Ethernet, Wireless, both, or none
         find_ip_regex = '%s.*\n.*inet addr:([0-9\.]*) (.*)'
