@@ -318,6 +318,9 @@ class InspectorLSof(FeedbackInspector):
     def inspect(self, logdata):
         pass
 
+class InspectorContentObjects(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
 
 #
 # Add your inspector to the list
@@ -339,5 +342,6 @@ inspectors = {
     'cpu-info.txt': InspectorCPUInfo,
     'xorg-log.txt': InspectorXorg,
     'lsof.txt': InspectorLSof,
-    'screenshot.png': InspectorScreenshot
+    'screenshot.png': InspectorScreenshot,
+    'content-objects.txt': InspectorContentObjects
 }
