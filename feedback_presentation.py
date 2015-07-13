@@ -18,6 +18,7 @@ import feedback_inspectors  # TODO: is this used?
 import markup
 import base64
 import time
+import cgi
 
 
 #
@@ -114,7 +115,12 @@ class FeedbackPresentation:
                 self.page.img(src='data:image/png;base64,%s' % img64)
                 pass
             else:
-                self.page.pre(''.join(log['logdata']), class_='logfile')
+                # Insert log lines, escaping non-ascii characters to HTML encoding
+                lines = []
+                for line in log['logdata']:
+                    lines.append (cgi.escape(unicode(line, errors='ignore')).encode('ascii', 'xmlcharrefreplace'))
+
+                self.page.pre(lines, class_='logfile')
 
             self.page.div.close()
             self.page.div.close()
