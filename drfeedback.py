@@ -69,8 +69,8 @@ def analyze(tarfilename, idname=None, full_dump=False):
 
     # complete the report and hand it over
     html_report.wrap_it_up()
-    hmtl_document = html_report.get_html()
-    return hmtl_document()
+    html_document = html_report.get_html()
+    return html_document()
 
 
 if __name__ == '__main__':
