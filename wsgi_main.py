@@ -19,6 +19,7 @@ import os
 import drfeedback
 import tempfile
 import cgi
+import shutil
 from urlparse import urljoin
 
 # The filesystem directory where all HTML reports are stored
@@ -27,9 +28,10 @@ reports_directory = '/var/local/feedback-reports'
 reports_url = 'http://dev.kano.me/feedback-reports'
 
 
-def _save_report_(report_id, html_data, directory=reports_directory):
+def _save_report_(report_id, html_data, tarfile_name, directory=reports_directory):
     # Saves the HTML report file on the local filesystem
     filename = '%s.html' % report_id
+    output_tarfile = '%s.tgz' % report_id
 
     try:
         assert (os.path.exists(directory))
@@ -37,6 +39,9 @@ def _save_report_(report_id, html_data, directory=reports_directory):
         htmlfile = open(abs_filename, 'w')
         htmlfile.write(html_data)
         htmlfile.close()
+
+        abs_output_tarfile = os.path.join(directory, output_tarfile)
+        shutil.copy(tarfile_name,  abs_output_tarfile)
         return filename
     except:
         raise
@@ -97,12 +102,13 @@ def application(environ, start_response):
     report_html = drfeedback.analyze(html_tmpfile.name, idname=report_id,
                                      full_dump=full_dump)
 
+    # Save the report in the local filesystem to be served via nginx
+    report_file = _save_report_(report_id, report_html, html_tmpfile.name)
+    assert (report_file)
+
     # closing the tempfile to efectively remove it
     html_tmpfile.close()
 
-    # Save the report in the local filesystem to be served via nginx
-    report_file = _save_report_(report_id, report_html)
-    assert (report_file)
 
     # Send the results to the client
     start_response('200 OK', [('Content-Type', 'text/html')])
