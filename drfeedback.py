@@ -46,15 +46,21 @@ def analyze(tarfilename, idname=None, full_dump=False):
             # find out each logfile to determine the inspector
             logfile = member.name
 
-            # we extract the logfile contents in-process
-            logdata = tar.extractfile(member).readlines()
+            logdata = tar.extractfile(member).read()
 
             # instantiate the inspector that understands this logfile
             # remove possibly appended paths in the filename
-            i = inspectors[os.path.basename(member.name)](logfile)
+            i = get_inspector(os.path.basename(member.name))(logfile)
+
+            # we extract the logfile contents in-process
 
             # send data to inpector to analyze
             # and send results to the presentation layer
+            if i.get_format(logdata) == 'text':
+                logdata = logdata.splitlines(True)
+            else:
+                logdata = [logdata]
+
             i.inspect(logdata)
 
             if not full_dump:
@@ -63,8 +69,8 @@ def analyze(tarfilename, idname=None, full_dump=False):
             html_report.add_report(i, logdata)
 
         except Exception:
-            print 'Warning: Could not inspect data for logfile %s' % logfile
-            traceback.print_exc(file=sys.stdout)
+            print >>sys.stderr, 'Warning: Could not inspect data for logfile %s' % logfile
+            traceback.print_exc(file=sys.stderr)
             pass
 
     # complete the report and hand it over

@@ -79,6 +79,16 @@ class FeedbackInspector:
         '''
         pass
 
+    def get_format(self, logdata):
+        # FIXME: Find a more elegant way to detect a screenshot file
+        if logdata.startswith('\x89PNG\r\n'):
+            format = 'image'
+        else:
+            format = 'text'
+        import sys
+        print >>sys.stderr, self.logfile, format
+        return format
+
 #
 # Instantiate your specific Inspector for a new logfile parser below
 #
@@ -129,18 +139,25 @@ class InspectorHdmiInfo(FeedbackInspector):
 
         # search for the current video mode (CEA / DMT) and the current display resolution
         try:
+            for line in logdata:
+                if re.search('HDMI: bad EDID header', ''.join(logdata)):
+                    self.add_error(line)
+
             m = re.search('HDMI:EDID found preferred (.*) detail timing format: (.*)x(.*)p.*', ''.join(logdata))
-            video_mode = m.group(1)
-            display_width = m.group(2)
-            display_height = m.group(3)
+            if m:
+                video_mode = m.group(1)
+                display_width = m.group(2)
+                display_height = m.group(3)
 
-            self.add_info('Video mode is set to: %s' % video_mode)
+                self.add_info('Video mode is set to: %s' % video_mode)
 
-            if int(display_width) < minimum_display_width or int(display_height) < minimum_display_height:
-                self.add_error('Current display mode is too small: %sx%s (minimum: %sx%s)' %
-                               (display_width, display_height, minimum_display_width, minimum_display_height))
+                if int(display_width) < minimum_display_width or int(display_height) < minimum_display_height:
+                    self.add_error('Current display mode is too small: %sx%s (minimum: %sx%s)' %
+                                   (display_width, display_height, minimum_display_width, minimum_display_height))
+                else:
+                    self.add_info('Current display mode should be ok: %sx%s' % (display_width, display_height))
             else:
-                self.add_info('Current display mode should be ok: %sx%s' % (display_width, display_height))
+                self.add_error("HDMI didn't find preferred timing")
         except:
             self.add_error('Could not determine current display mode')
             raise
@@ -314,14 +331,27 @@ class InspectorXorg(FeedbackInspector):
         pass
 
 
+class InspectorSyslog(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 class InspectorLSof(FeedbackInspector):
     def inspect(self, logdata):
         pass
+
 
 class InspectorContentObjects(FeedbackInspector):
     def inspect(self, logdata):
         pass
 
+
+class InspectorBinary(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+    def get_format(self, logdata):
+        return 'binary'
 #
 # Add your inspector to the list
 #
@@ -331,11 +361,13 @@ inspectors = {
     'cmdline.txt': InspectorCmdline,
     'config.txt': InspectorConfig,
     'dmesg.txt': InspectorDmesg,
+    'edid.dat':  InspectorBinary,
     'hdmi-info.txt': InspectorHdmiInfo,
     'kanux_version.txt': InspectorKanuxVersion,
     'kwificache.txt': InspectorKwifiCache,
     'packages.txt': InspectorPackages,
     'process.txt': InspectorProcess,
+    'syslog.txt': InspectorSyslog,
     'usbdevices.txt': InspectorUsbDevices,
     'wpalog.txt': InspectorWpalog,
     'wifi-info.txt': InspectorWifiInfo,
@@ -345,3 +377,12 @@ inspectors = {
     'screenshot.png': InspectorScreenshot,
     'content-objects.txt': InspectorContentObjects
 }
+
+
+def get_inspector(filename):
+    if filename in inspectors:
+        return inspectors[filename]
+    elif filename.startswith('core-'):
+        return InspectorBinary
+    else:
+        raise

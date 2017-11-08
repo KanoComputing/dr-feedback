@@ -70,11 +70,7 @@ class FeedbackPresentation:
             self.error.append(inspector.get_error())
 
         if logdata:
-            # FIXME: Find a more elegant way to detect a screenshot file
-            if logdata[0] == '\x89PNG\r\n':
-                format = 'image'
-            else:
-                format = 'text'
+            format = inspector.get_format(logdata[0])
 
             self.logs.append({'logfile': inspector.logfile, 'logdata': logdata,
                               'format': format})
@@ -114,6 +110,14 @@ class FeedbackPresentation:
                 img64 = base64.b64encode(''.join(log['logdata']))
                 self.page.img(src='data:image/png;base64,%s' % img64)
                 pass
+            elif log['format'] == 'binary':
+                if len(log['logdata']) < 1024 * 1024:
+                    b64 = base64.b64encode(''.join(log['logdata']))
+                    self.page.a(href='data:application/octet-stream;base64,%s' % b64, download=log['logfile'])
+                    self.page.h3('Download: %s' % log['logfile'])
+                    self.page.a.close()
+                else:
+                    self.page.h4("data too big; extract from original tar file")
             else:
                 # Insert log lines, escaping non-ascii characters to HTML encoding
                 lines = []
