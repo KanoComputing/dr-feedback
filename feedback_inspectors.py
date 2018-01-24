@@ -257,7 +257,7 @@ class InspectorUsbDevices(FeedbackInspector):
         self.assert_exists(logdata, kano_wireless_dongle, 'This Kit is not using the de-facto wireless dongle provided by Kano (or is an RPI3)')
         self.assert_exists(logdata, kano_keyboard, 'This Kit is not using the de-facto Kano Keyboard')
 
-        
+
 class InspectorWpalog(FeedbackInspector):
     def inspect(self, logdata):
         # This parser is obsoleted by InspectorWifiInfo
@@ -355,6 +355,13 @@ class InspectorBinary(FeedbackInspector):
 
     def get_format(self, logdata):
         return 'binary'
+
+
+class InspectorScreenLog(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 #
 # Add your inspector to the list
 #
@@ -364,7 +371,8 @@ inspectors = {
     'cmdline.txt': InspectorCmdline,
     'config.txt': InspectorConfig,
     'dmesg.txt': InspectorDmesg,
-    'edid.dat':  InspectorBinary,
+    'edid.dat': InspectorBinary,
+    'screen-log.txt': InspectorScreenLog,
     'hdmi-info.txt': InspectorHdmiInfo,
     'kanux_version.txt': InspectorKanuxVersion,
     'kwificache.txt': InspectorKwifiCache,
