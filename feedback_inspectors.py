@@ -190,7 +190,7 @@ class InspectorPackages(FeedbackInspector):
         # Fetch the list of all latest debian Packages that we supply at our
         # repository server
         url_kano = 'http://repo.kano.me'
-        url_kano_packages = url_kano + '/archive/dists/release/main/binary-armhf/Packages.gz'
+        url_kano_packages = url_kano + '/archive-jessie/dists/release/main/binary-armhf/Packages.gz'
 
         # A temporary file to Kano Release file because gzip needs random access - tell() function
         html_tmpfile = tempfile.TemporaryFile(mode='w+b')
@@ -254,7 +254,7 @@ class InspectorUsbDevices(FeedbackInspector):
         kano_wireless_dongle = 'Ralink Technology, Corp. RT5370 Wireless Adapter'
         kano_keyboard = 'ID 1997:2433'
 
-        self.assert_exists(logdata, kano_wireless_dongle, 'This Kit is not using the de-facto wireless dongle provided by Kano')
+        self.assert_exists(logdata, kano_wireless_dongle, 'This Kit is not using the de-facto wireless dongle provided by Kano (or is an RPI3)')
         self.assert_exists(logdata, kano_keyboard, 'This Kit is not using the de-facto Kano Keyboard')
 
         
@@ -322,8 +322,11 @@ class InspectorScreenshot(FeedbackInspector):
 
 class InspectorCPUInfo(FeedbackInspector):
     def inspect(self, logdata):
-        model_b = 'Model B+: False'
-        self.assert_exists(logdata, model_b, 'This is a RaspberryPI Model B+')
+        model = 'Model: unknown'
+        for log in logdata:
+            if log.startswith('Model:'):
+                model = log.strip()
+        self.add_info('This is a RaspberryPI ' + model)
 
 
 class InspectorXorg(FeedbackInspector):

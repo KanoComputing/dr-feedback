@@ -20,6 +20,7 @@ import drfeedback
 import tempfile
 import cgi
 import shutil
+import stat
 from urlparse import urljoin
 
 # The filesystem directory where all HTML reports are stored
@@ -42,6 +43,11 @@ def _save_report_(report_id, html_data, tarfile_name, directory=reports_director
 
         abs_output_tarfile = os.path.join(directory, output_tarfile)
         shutil.copy(tarfile_name,  abs_output_tarfile)
+        os.chmod(abs_output_tarfile,
+                 stat.S_IRUSR |
+                 stat.S_IWUSR |
+                 stat.S_IRGRP |
+                 stat.S_IROTH)
         return filename
     except:
         raise
