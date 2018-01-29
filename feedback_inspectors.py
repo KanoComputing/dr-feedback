@@ -169,6 +169,11 @@ class InspectorKanuxVersion(FeedbackInspector):
         self.add_info('Last updated on: %s' % logdata[0])
 
 
+class InspectorKanuxStamp(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 class InspectorKwifiCache(FeedbackInspector):
     def inspect(self, logdata):
         if not len(logdata):
@@ -375,6 +380,7 @@ inspectors = {
     'screen-log.txt': InspectorScreenLog,
     'hdmi-info.txt': InspectorHdmiInfo,
     'kanux_version.txt': InspectorKanuxVersion,
+    'kanux_stamp.txt': InspectorKanuxStamp,
     'kwificache.txt': InspectorKwifiCache,
     'packages.txt': InspectorPackages,
     'process.txt': InspectorProcess,
