@@ -367,6 +367,26 @@ class InspectorScreenLog(FeedbackInspector):
         pass
 
 
+class InspectorProcessTree(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
+class InspectorDiskSpace(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
+class InspectorLsblk(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
+class InspectorSourcesList(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 #
 # Add your inspector to the list
 #
@@ -384,6 +404,7 @@ inspectors = {
     'kwificache.txt': InspectorKwifiCache,
     'packages.txt': InspectorPackages,
     'process.txt': InspectorProcess,
+    'process-tree.txt': InspectorProcessTree,
     'syslog.txt': InspectorSyslog,
     'usbdevices.txt': InspectorUsbDevices,
     'wpalog.txt': InspectorWpalog,
@@ -392,7 +413,10 @@ inspectors = {
     'xorg-log.txt': InspectorXorg,
     'lsof.txt': InspectorLSof,
     'screenshot.png': InspectorScreenshot,
-    'content-objects.txt': InspectorContentObjects
+    'content-objects.txt': InspectorContentObjects,
+    'disk-space.txt': InspectorDiskSpace,
+    'lsblk.txt': InspectorLsblk,
+    'sources-list.txt': InspectorSourcesList,
 }
 
 
