@@ -387,6 +387,11 @@ class InspectorSourcesList(FeedbackInspector):
         pass
 
 
+class InspectorMemStats(FeedbackInspector):
+    def inspect(self, logdata):
+        pass
+
+
 #
 # Add your inspector to the list
 #
@@ -417,6 +422,7 @@ inspectors = {
     'disk-space.txt': InspectorDiskSpace,
     'lsblk.txt': InspectorLsblk,
     'sources-list.txt': InspectorSourcesList,
+    'mem-stats.txt': InspectorMemStats,
 }
 
 
