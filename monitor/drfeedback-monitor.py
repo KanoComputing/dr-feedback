@@ -82,6 +82,8 @@ class Process():
     '''
     def __init__(self, args):
         self.args = args
+        self.url_simulate = 'http://127.0.0.1:9000'
+        self.url_slack = 'https://hooks.slack.com/services/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'
 
     def vprint(self, literal):
         if self.args['--verbose']:
@@ -135,8 +137,10 @@ class Process():
                 else:
 
                     if self._detect_spike(average_alerts, last_average_value):
-                        self.vprint ('A spike was detected! - current-average={} last-average={} threshold={} max-permitted-average={}'.format(
-                            average_alerts, last_average_value, self.args['--threshold'], average_alerts * self.args['--threshold']))
+                        self.vprint ('A spike was detected! current-average={} last-average={} ' \
+                                     'threshold={} max-permitted-average={}'.format(
+                                         average_alerts, last_average_value,
+                                         self.args['--threshold'], average_alerts * self.args['--threshold']))
                         return True
                     else:
                         last_average_value = average_alerts
@@ -156,7 +160,26 @@ class Process():
             self.vprint ('Spike was detected! {} * {} < {}'.format(average_alerts, self.args['--threshold'], last_average))
 
         return is_spike
-            
+
+    def slack_alert(self, simulate):
+        '''
+        Sends a network slack alert to the Dev Team to bring attentio to DrFeedback logs
+        '''
+
+        url = self.url_simulate if simulate else self.url_slack
+        self.vprint('Slack alert signal requested, simulate={} url={}'.format(simulate, url))
+
+        command = 'curl -X POST --data-urlencode \'payload=' \
+                  '{"channel": "#team-os", "username": "drfeedback", "text": "DrFeedback Monitor", "icon_emoji": ":face_with_monocle:"}\' ' + url
+
+        self.vprint(command)
+
+        # FIXME: Find a reliable way to test it in simulation mode
+        if not simulate:
+            os.system(command)
+
+        return
+
     def run(self):
         '''
         Run is the main entry point to put this class task to work
@@ -199,7 +222,10 @@ if __name__ == '__main__':
         args['--threshold'] = float(args['--threshold'])
 
     if args['process']:
-        rc = Process(args).run()
+        processor = Process(args)
+        rc = processor.run()
+        if rc:
+            processor.slack_alert(simulate = not args['--alert'])
 
     elif args['collect']:
         rc = Collect(args).run()
