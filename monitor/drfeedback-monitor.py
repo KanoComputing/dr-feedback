@@ -170,7 +170,9 @@ class Process():
         self.vprint('Slack alert signal requested, simulate={} url={}'.format(simulate, url))
 
         command = 'curl -X POST --data-urlencode \'payload=' \
-                  '{"channel": "#team-os", "username": "drfeedback", "text": "DrFeedback Monitor", "icon_emoji": ":face_with_monocle:"}\' ' + url
+                  '{"channel": "#team-os", "username": "drfeedback", ' \
+                  '"text": "DrFeedback Monitor detected a spike: http://dev.kano.me/feedback-reports", ' \
+                  '"icon_emoji": ":face_with_monocle:"}\' ' + url
 
         self.vprint(command)
 
