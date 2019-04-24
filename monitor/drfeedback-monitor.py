@@ -171,7 +171,8 @@ class Process():
 
         command = 'curl -X POST --data-urlencode \'payload=' \
                   '{"channel": "#team-os", "username": "drfeedback", ' \
-                  '"text": "DrFeedback Monitor detected a spike: http://dev.kano.me/feedback-reports", ' \
+                  '"text": "DrFeedback Monitor detected a spike: ' \
+                  'https://kanocomputing.atlassian.net/wiki/spaces/OS/pages/422150149/Dr+Feedback+Architecture", ' \
                   '"icon_emoji": ":face_with_monocle:"}\' ' + url
 
         self.vprint(command)
