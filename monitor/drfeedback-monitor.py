@@ -28,7 +28,17 @@ Options:
    -c, --commit                 Write the new collected counter to the logfile
    -a, --alert                  Send a slack alert if spike is detected
    -V, --verbose                Explain the steps taken during the process
+   -l, --logfile=<filename>     Name of logfile to collect data into or process
+   -d, --directory=<pathname>   Directory to check for numbers of files and collect counter
+   -s, --samples=<n>            Number of samples to group for computing average
+   -t, --threshold=<factor>     Threshold multitplier for the last average, if above then spike is raised
+
 """
+
+LOGFILE = 'drfeedback-numbers.txt'
+DRFEEDBACK_DIRECTORY = '/var/cache'
+SAMPLES = 5
+THRESHOLD = 1.5
 
 import os
 import sys
@@ -195,11 +205,6 @@ class Process():
 
 
 if __name__ == '__main__':
-
-    DRFEEDBACK_DIRECTORY = '/var/cache'
-    LOGFILE = 'drfeedback-numbers.txt'
-    SAMPLES = 5
-    THRESHOLD = 1.5
 
     args = docopt.docopt(__doc__)
     rc = 0
