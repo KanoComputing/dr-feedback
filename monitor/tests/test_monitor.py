@@ -43,6 +43,10 @@ def test_steady_five_days():
     rc = os.system(cmdline('log_sample_steady.txt', 5, 1.5))
     assert os.WEXITSTATUS(rc) == 0
 
+def test_spike_real_log():
+    rc = os.system(cmdline('log_real_data.txt', 2, 1.5))
+    assert os.WEXITSTATUS(rc) == 1
+
 def test_alert():
     alert_message = 'Slack alert signal requested, simulate=True'
     command_line = cmdline('log_sample_spike.txt', 5, 1.1)
