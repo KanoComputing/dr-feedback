@@ -93,7 +93,7 @@ class Process():
     def __init__(self, args):
         self.args = args
         self.url_simulate = 'http://127.0.0.1:9000'
-        self.url_slack = 'https://hooks.slack.com/services/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'
+        self.url_slack = os.environ.get('SLACK_WEBHOOK_URL')
 
     def vprint(self, literal):
         if self.args['--verbose']:
